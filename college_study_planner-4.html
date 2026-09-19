@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#6366f1">
+<title>College Study Planner</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#6b7280;--primary:#6366f1;--border:#e5e7eb;--danger:#ef4444}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}button,input,select{font:inherit}button{cursor:pointer;border:0}
+header{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;padding:22px 5%;position:sticky;top:0;z-index:10;box-shadow:0 5px 20px #4f46e533}.head{max-width:1200px;margin:auto;display:flex;justify-content:space-between;align-items:center}.logo h1{font-size:25px}.logo p{opacity:.85;font-size:13px;margin-top:4px}.icon{width:42px;height:42px;border-radius:12px;background:#ffffff2e;color:#fff;font-size:19px}
+nav{max-width:1200px;margin:20px auto;padding:0 5%;display:flex;gap:8px;overflow:auto}nav button{background:var(--card);color:var(--muted);border:1px solid var(--border);padding:11px 17px;border-radius:10px;white-space:nowrap}nav button.active,nav button:hover{background:var(--primary);color:#fff}
+main{max-width:1200px;margin:auto;padding:0 5% 50px}.page{display:none}.page.active{display:block}.title{margin:10px 0 20px}.title h2{font-size:27px}.title p{color:var(--muted);margin-top:5px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}.stat,.card{background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:0 10px 30px #0f172a14}.stat{padding:20px}.value{font-size:28px;font-weight:800;margin-top:8px}.label{color:var(--muted);font-size:13px}.grid{display:grid;grid-template-columns:1.3fr 1fr;gap:20px}.card{padding:20px}.cardhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px}.btn{padding:10px 15px;border-radius:10px;background:var(--primary);color:#fff;font-weight:600}.secondary{background:#eef2ff;color:#4f46e5}.danger{background:#fee2e2;color:#b91c1c}
+.tasks{display:flex;flex-direction:column;gap:10px}.task{display:flex;align-items:center;gap:12px;padding:13px;border:1px solid var(--border);border-radius:12px}.task input[type=checkbox]{width:19px;height:19px;accent-color:var(--primary)}.taskbody{flex:1}.tasktitle{font-weight:600}.done .tasktitle{text-decoration:line-through;color:var(--muted)}.meta{font-size:12px;color:var(--muted);margin-top:3px}.del{background:none;color:var(--danger);font-size:18px}
+.progress{height:10px;background:#e5e7eb;border-radius:20px;overflow:hidden;margin-top:15px}.fill{height:100%;width:0;background:linear-gradient(90deg,#6366f1,#8b5cf6);transition:.3s}.ptext{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;margin-top:7px}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:15px}.group{display:flex;flex-direction:column;gap:7px}.full{grid-column:1/-1}label{font-size:13px;font-weight:600}input,select{width:100%;padding:12px 13px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);outline:0}input:focus,select:focus{border-color:var(--primary)}
+.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:850px}th,td{border:1px solid var(--border);padding:10px;text-align:center}th{background:#eef2ff;color:#4f46e5}td input{min-width:100px}
+.subjects{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.subject{padding:18px;border:1px solid var(--border);border-radius:15px}.subject b{font-size:17px}.subject small{display:block;color:var(--muted);margin:6px 0 12px}
+.timer{max-width:550px;margin:auto;text-align:center}.modes{display:flex;justify-content:center;gap:8px;margin-bottom:20px}.modes button{padding:8px 13px;border-radius:9px;background:#eef2ff;color:#4f46e5}.modes .active{background:var(--primary);color:#fff}.display{font-size:80px;font-weight:800;margin:20px 0}.controls{display:flex;justify-content:center;gap:10px}
+.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:20px;z-index:50}.modal.show{display:flex}.modalbox{background:var(--card);width:100%;max-width:500px;padding:24px;border-radius:18px}.modalhead{display:flex;justify-content:space-between;margin-bottom:20px}.close{background:none;font-size:23px;color:var(--muted)}
+body.dark{--bg:#0f172a;--card:#172033;--text:#f8fafc;--muted:#94a3b8;--border:#293548}body.dark th{background:#202b44}body.dark .secondary,body.dark .modes button{background:#252f49;color:#c7d2fe}body.dark .progress{background:#293548}
+
+/* ---------- ANIMATIONS ---------- */
+body::before{
+  content:"";position:fixed;inset:-30%;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(circle at 20% 20%,#6366f118 0 120px,transparent 280px),
+    radial-gradient(circle at 80% 30%,#8b5cf612 0 140px,transparent 300px),
+    radial-gradient(circle at 50% 90%,#22c55e0d 0 120px,transparent 280px);
+  animation:bgFloat 14s ease-in-out infinite alternate;
+}
+@keyframes bgFloat{0%{transform:translate3d(-2%,0,0) scale(1)}100%{transform:translate3d(2%,-2%,0) scale(1.05)}}
+header{animation:headerDrop .65s cubic-bezier(.2,.8,.2,1)}
+@keyframes headerDrop{from{opacity:0;transform:translateY(-25px)}to{opacity:1;transform:translateY(0)}}
+.nav{transition:transform .2s ease,box-shadow .2s ease}
+.nav:hover{transform:translateY(-2px);box-shadow:0 7px 18px #6366f125}
+.page.active{animation:pageIn .35s ease both}
+@keyframes pageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.stat,.card,.subject{transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+.stat:hover,.card:hover,.subject:hover{transform:translateY(-4px);box-shadow:0 16px 35px #0f172a18}
+.btn,.icon,.modes button{transition:transform .18s ease,box-shadow .18s ease,background .18s ease}
+.btn:hover,.icon:hover,.modes button:hover{transform:translateY(-2px);box-shadow:0 7px 18px #6366f133}
+.btn:active,.icon:active{transform:scale(.96)}
+.task{animation:taskIn .3s ease both}
+@keyframes taskIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+.fill{position:relative;overflow:hidden}
+.fill::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,#ffffff55,transparent);transform:translateX(-100%);animation:shine 2.2s infinite}
+@keyframes shine{100%{transform:translateX(100%)}}
+.display{animation:timerPulse 2.5s ease-in-out infinite}
+@keyframes timerPulse{50%{transform:scale(1.015)}}
+.completed-pop{animation:completePop .45s ease}
+@keyframes completePop{0%{transform:scale(.9)}60%{transform:scale(1.05)}100%{transform:scale(1)}}
+
+
+/* ---------- 3D GLASSMORPHISM ---------- */
+:root{
+  --glass:rgba(255,255,255,.58);
+  --glass-border:rgba(255,255,255,.72);
+}
+body{
+  background:
+    radial-gradient(circle at 10% 10%,#818cf833,transparent 28%),
+    radial-gradient(circle at 90% 20%,#c084fc2b,transparent 30%),
+    radial-gradient(circle at 50% 100%,#38bdf81c,transparent 30%),
+    var(--bg);
+  background-attachment:fixed;
+}
+header{
+  background:linear-gradient(135deg,#6366f1dd,#8b5cf6dd);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid #ffffff35;
+}
+.card,.stat,.subject,.modalbox{
+  background:var(--glass);
+  backdrop-filter:blur(20px) saturate(150%);
+  -webkit-backdrop-filter:blur(20px) saturate(150%);
+  border:1px solid var(--glass-border);
+  box-shadow:
+    0 18px 45px #0f172a1c,
+    inset 0 1px 0 #ffffff99,
+    inset 0 -1px 0 #ffffff22;
+  transform-style:preserve-3d;
+  perspective:900px;
+}
+.card:hover,.stat:hover,.subject:hover{
+  transform:translateY(-6px) rotateX(1.5deg) rotateY(-1deg);
+  box-shadow:
+    0 25px 55px #0f172a26,
+    inset 0 1px 0 #ffffffaa;
+}
+.stat-icon{filter:drop-shadow(0 5px 5px #0002)}
+.task{
+  background:#ffffff38;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border:1px solid #ffffff70;
+  box-shadow:inset 0 1px 0 #ffffff70,0 7px 18px #0f172a0b;
+  transition:transform .22s ease,box-shadow .22s ease;
+}
+.task:hover{transform:translateX(4px) translateZ(8px);box-shadow:0 10px 22px #0f172a18}
+input,select{
+  background:#ffffff42;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border:1px solid #ffffff80;
+  box-shadow:inset 0 1px 0 #ffffff80,0 4px 12px #0f172a08;
+}
+nav button{
+  background:#ffffff55;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  box-shadow:0 8px 20px #0f172a0c,inset 0 1px 0 #ffffff90;
+}
+table{
+  background:#ffffff25;
+  backdrop-filter:blur(10px);
+}
+th{
+  background:#ffffff55!important;
+  backdrop-filter:blur(12px);
+}
+td{
+  background:#ffffff20;
+}
+.timer{
+  position:relative;
+  overflow:hidden;
+}
+.timer::before,.timer::after{
+  content:"";
+  position:absolute;
+  border-radius:50%;
+  pointer-events:none;
+  filter:blur(2px);
+}
+.timer::before{
+  width:180px;height:180px;right:-80px;top:-90px;
+  background:#8b5cf633;
+  animation:orbFloat 6s ease-in-out infinite alternate;
+}
+.timer::after{
+  width:130px;height:130px;left:-60px;bottom:-70px;
+  background:#38bdf82b;
+  animation:orbFloat 7s ease-in-out infinite alternate-reverse;
+}
+@keyframes orbFloat{
+  from{transform:translate3d(0,0,0)}
+  to{transform:translate3d(25px,18px,0)}
+}
+.display{position:relative;z-index:1;text-shadow:0 8px 20px #6366f133}
+.btn{box-shadow:0 8px 18px #6366f133,inset 0 1px 0 #ffffff55}
+.progress{background:#ffffff55;box-shadow:inset 0 2px 5px #0f172a12}
+body.dark{
+  --glass:rgba(23,32,51,.58);
+  --glass-border:rgba(255,255,255,.13);
+}
+body.dark{
+  background:
+    radial-gradient(circle at 15% 10%,#6366f125,transparent 28%),
+    radial-gradient(circle at 85% 20%,#8b5cf625,transparent 30%),
+    var(--bg);
+}
+body.dark .task{background:#ffffff0a;border-color:#ffffff16}
+body.dark input,body.dark select{background:#ffffff09;border-color:#ffffff18}
+body.dark nav button{background:#ffffff0d;border-color:#ffffff18}
+body.dark td{background:#ffffff08}
+
+@media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.subjects{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.stats{gap:10px}.stat{padding:15px}.value{font-size:23px}.subjects,.form{grid-template-columns:1fr}.full{grid-column:auto}.display{font-size:58px}}
+</style>
+</head>
+<body>
+<header><div class="head"><div class="logo"><h1>📚 College Study Planner</h1><p id="today"></p></div><button class="icon" id="theme">🌙</button></div></header>
+<nav>
+<button class="nav active" data-page="dashboard">Dashboard</button><button class="nav" data-page="tasks">Tasks</button><button class="nav" data-page="timetable">Timetable</button><button class="nav" data-page="subjects">Subjects</button><button class="nav" data-page="timer">Pomodoro</button>
+</nav>
+<main>
+<section id="dashboard" class="page active">
+<div class="title"><h2>Good day 👋</h2><p>Stay consistent and keep moving forward.</p></div>
+<div class="stats"><div class="stat">📋<div class="value" id="total">0</div><div class="label">Total Tasks</div></div><div class="stat">✅<div class="value" id="completed">0</div><div class="label">Completed</div></div><div class="stat">⏱️<div class="value" id="minutes">0</div><div class="label">Study Minutes</div></div><div class="stat">🔥<div class="value" id="streak">0</div><div class="label">Study Streak</div></div></div>
+<div class="grid"><div class="card"><div class="cardhead"><h3>Today's Tasks</h3><button class="btn" onclick="openModal()">+ Add</button></div><div id="dashTasks" class="tasks"></div></div><div class="card"><div class="cardhead"><h3>Today's Progress</h3></div><div class="value" id="percent">0%</div><div class="progress"><div id="fill" class="fill"></div></div><div class="ptext"><span>Tasks completed</span><span id="count">0 / 0</span></div><button class="btn" style="margin-top:20px" onclick="showPage('timer')">Start studying →</button></div></div>
+</section>
+<section id="tasks" class="page"><div class="title"><h2>Tasks</h2><p>Manage assignments, revision and study goals.</p></div><div class="card"><div class="cardhead"><h3>My Tasks</h3><button class="btn" onclick="openModal()">+ Add Task</button></div><div id="allTasks" class="tasks"></div></div></section>
+<section id="timetable" class="page"><div class="title"><h2>Weekly Timetable</h2><p>Create your college study schedule.</p></div><div class="card"><div class="cardhead"><h3>Weekly Schedule</h3><button class="btn secondary" onclick="clearTable()">Clear</button></div><div class="tablewrap"><table><thead><tr><th>Time</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead><tbody id="table"></tbody></table></div></div></section>
+<section id="subjects" class="page"><div class="title"><h2>Subjects</h2><p>Track your subjects and weekly study goals.</p></div><div class="card" style="margin-bottom:20px"><div class="cardhead"><h3>Add Subject</h3></div><form id="subjectForm" class="form"><div class="group"><label>Subject Name</label><input id="subjectName" required placeholder="e.g. Mathematics"></div><div class="group"><label>Weekly Goal (hours)</label><input id="subjectHours" type="number" min="1" required placeholder="5"></div><div class="group full"><button class="btn">Add Subject</button></div></form></div><div id="subjectsList" class="subjects"></div></section>
+<section id="timer" class="page"><div class="title"><h2>Pomodoro Timer</h2><p>Focus, then take a proper break.</p></div><div class="card timer"><div class="modes"><button class="mode active" data-min="25">Focus 25</button><button class="mode" data-min="5">Break 5</button><button class="mode" data-min="50">Focus 50</button></div><div id="display" class="display">25:00</div><div class="controls"><button id="start" class="btn">Start</button><button id="reset" class="btn secondary">Reset</button></div><p style="color:var(--muted);margin-top:18px">Completed focus sessions count toward study time.</p></div></section>
+</main>
+<div id="modal" class="modal"><div class="modalbox"><div class="modalhead"><h3>Add New Task</h3><button class="close" onclick="closeModal()">×</button></div><form id="taskForm" class="form"><div class="group full"><label>Task</label><input id="taskTitle" required placeholder="e.g. Complete DBMS assignment"></div><div class="group"><label>Subject</label><input id="taskSubject" placeholder="e.g. DBMS"></div><div class="group"><label>Priority</label><select id="priority"><option>Normal</option><option>High</option><option>Low</option></select></div><div class="group full"><button class="btn">Add Task</button></div></form></div></div>
+<script>
+const KEY="collegeStudyPlanner";
+let d=JSON.parse(localStorage.getItem(KEY))||{tasks:[],subjects:[],table:{},minutes:0,streak:0,last:null,theme:"light"};
+const save=()=>localStorage.setItem(KEY,JSON.stringify(d)), esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m])), today=()=>new Date().toISOString().slice(0,10);
+document.getElementById("today").textContent=new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+function showPage(id){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("active",x.dataset.page===id));scrollTo(0,0)}
+document.querySelectorAll(".nav").forEach(x=>x.onclick=()=>showPage(x.dataset.page));
+function openModal(){document.getElementById("modal").classList.add("show");document.getElementById("taskTitle").focus()}function closeModal(){document.getElementById("modal").classList.remove("show")}
+document.getElementById("modal").onclick=e=>{if(e.target.id==="modal")closeModal()};
+document.getElementById("taskForm").onsubmit=e=>{e.preventDefault();d.tasks.push({id:Date.now(),title:taskTitle.value.trim(),subject:taskSubject.value.trim(),priority:priority.value,done:false});save();e.target.reset();closeModal();render();update()};
+function toggle(id){let t=d.tasks.find(x=>x.id===id);t.done=!t.done;save();render();update();if(t.done){document.querySelectorAll(".task").forEach(el=>{if(el.classList.contains("done"))el.classList.add("completed-pop")})}}function del(id){d.tasks=d.tasks.filter(x=>x.id!==id);save();render();update()}
+function taskHTML(t){return `<div class="task ${t.done?"done":""}"><input type="checkbox" ${t.done?"checked":""} onchange="toggle(${t.id})"><div class="taskbody"><div class="tasktitle">${esc(t.title)}</div><div class="meta">${t.subject?esc(t.subject)+" • ":""}${t.priority}</div></div><button class="del" onclick="del(${t.id})">🗑️</button></div>`}
+function render(){let html=d.tasks.length?d.tasks.map(taskHTML).join(""):'<p style="color:var(--muted)">No tasks yet.</p>';allTasks.innerHTML=html;dashTasks.innerHTML=html}
+function update(){let total=d.tasks.length,done=d.tasks.filter(x=>x.done).length,p=total?Math.round(done/total*100):0;document.getElementById("total").textContent=total;completed.textContent=done;minutes.textContent=d.minutes;streak.textContent=d.streak;percent.textContent=p+"%";fill.style.width=p+"%";count.textContent=`${done} / ${total}`}
+document.getElementById("subjectForm").onsubmit=e=>{e.preventDefault();d.subjects.push({id:Date.now(),name:subjectName.value.trim(),hours:+subjectHours.value});save();e.target.reset();subjectsRender()};
+function subjectDel(id){d.subjects=d.subjects.filter(x=>x.id!==id);save();subjectsRender()}function subjectsRender(){subjectsList.innerHTML=d.subjects.length?d.subjects.map(s=>`<div class="subject"><b>📘 ${esc(s.name)}</b><small>Goal: ${s.hours} hours / week</small><div class="progress"><div class="fill" style="width:0%"></div></div><button class="btn danger" style="margin-top:13px" onclick="subjectDel(${s.id})">Delete</button></div>`).join(""):'<div class="card" style="grid-column:1/-1"><p style="color:var(--muted)">No subjects added yet.</p></div>'}
+const times=["08:00 - 09:00","09:00 - 10:00","10:00 - 11:00","11:00 - 12:00","12:00 - 01:00","02:00 - 03:00","03:00 - 04:00","04:00 - 05:00","05:00 - 06:00","06:00 - 07:00"];
+function makeTable(){table.innerHTML=times.map((t,r)=>`<tr><th>${t}</th>${[0,1,2,3,4,5,6].map(c=>{let k=r+"-"+c;return `<td><input value="${esc(d.table[k]||"")}" placeholder="Study..." oninput="d.table['${k}']=this.value;save()"></td>`}).join("")}</tr>`).join("")}
+function clearTable(){if(confirm("Clear your entire timetable?")){d.table={};save();makeTable()}}
+let sec=1500,interval=null,running=false,current=25;
+function timerUI(){display.textContent=`${String(Math.floor(sec/60)).padStart(2,"0")}:${String(sec%60).padStart(2,"0")}`}
+function stop(){running=false;clearInterval(interval);start.textContent="Start"}
+function begin(){running=true;start.textContent="Pause";interval=setInterval(()=>{sec--;timerUI();if(sec<=0){stop();if(current>=25){d.minutes+=current;d.streak=d.last===today()?d.streak:d.streak+1;d.last=today();save();update()}alert("⏰ Session complete! Take a break.");sec=current*60;timerUI()}},1000)}
+document.querySelectorAll(".mode").forEach(b=>b.onclick=()=>{stop();current=+b.dataset.min;sec=current*60;document.querySelectorAll(".mode").forEach(x=>x.classList.remove("active"));b.classList.add("active");timerUI()});
+start.onclick=()=>running?stop():begin();reset.onclick=()=>{stop();sec=current*60;timerUI()};
+theme.onclick=()=>{document.body.classList.toggle("dark");d.theme=document.body.classList.contains("dark")?"dark":"light";theme.textContent=d.theme==="dark"?"☀️":"🌙";save()};
+if(d.theme==="dark"){document.body.classList.add("dark");theme.textContent="☀️"}
+render();update();subjectsRender();makeTable();timerUI();
+</script>
+</body>
+</html>
